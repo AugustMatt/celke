@@ -3,11 +3,14 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 
 /* Importa o componente Link do Inertia para navegação sem reload */
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
+
+/* Importa as funções reativas do vue para criar propriedades reativas */
+import { reactive } from 'vue';
 
 /* Importa o tipo BreadcrumbItem para tipar corretamente os breadcrumbs */
 import { type BreadcrumbItem } from '@/types';
-import { CirclePlus, Eye, Pencil } from 'lucide-vue-next';
+import { CirclePlus, Eye, Pencil, Search, Trash } from 'lucide-vue-next';
 
 /* Importar o componente de paginação */
 import Pagination from '@/components/Pagination.vue';
@@ -17,6 +20,7 @@ import FlashMessage from '@/components/FlashMessage.vue';
 
 /* Importar o componente para excluir o registro */
 import DeleteButton from '@/components/DeleteButton.vue'
+
 
 /* Define a interface do veículo, útil para tipagem TypeScript */
 export interface Vehicle {
@@ -32,7 +36,34 @@ const props = defineProps<{
         data: Vehicle[]; // Lista de Tarefas
         links: { url: string | null; label: string; active: boolean }[]; // Links da paginação
     };
+    name?: string;
+    started_at?: string;
+    finished_at?: string;
 }>();
+
+/* Campos de pesquisa */
+const filters = reactive({
+    name: props.name || '',
+    started_at: props.started_at || '',
+    finished_at: props.finished_at || '',
+});
+
+/* Função para realizar a pesquisa */
+const search = () => {
+    
+    router.get('/tasks', filters, {
+        preserveState: true,
+        preserveScroll: true
+    });
+};
+
+/* Função para limpar os filtros de pesquisa */
+const clearFilters = () => {
+    filters.name = '';
+    filters.started_at = '';
+    filters.finished_at = '';
+    router.get('/tasks');
+}
 
 /* Define os breadcrumbs que serão exibidos no layout */
 const breadcrumbItems: BreadcrumbItem[] = [
@@ -68,6 +99,23 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
             <!-- Apresentar a mensagem de sucesso ou erro -->
             <FlashMessage />
+
+            <!-- Inicio do formulario (filtro) de pesquisa -->
+            <form @submit.prevent="search" class="form-search">
+                <input type="text" v-model="filters.name" class="form-input" placeholder="Digite o nome da tarefa"></input>
+                <input type="datetime-local" v-model="filters.started_at" class="form-input"></input>
+                <input type="datetime-local" v-model="filters.finished_at" class="form-input"></input>
+                <div class="flex gap-1">
+                    <button type="submit" class="btn-primary align-icon-btn">
+                        <Search class="w-4 h-4"/>                        
+                        <span>Pesquisar</span>
+                    </button>
+                    <button type="button" @click="clearFilters" class="btn-warning align-icon-btn">
+                        <Trash class="w-4 h-4"/>                        
+                        <span>Limpar</span>
+                    </button>
+                </div>
+            </form>
 
             <!-- Container da tabela com bordas e sombra -->
             <div class="table-container">

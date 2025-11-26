@@ -7,21 +7,48 @@ use App\Models\Task;
 use Exception;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class TaskController extends Controller
 {
     /**
      * Listar as tarefas
+     * @param Request $request
+     * @return \Inertia\Response
      */
-    public function index()
+    public function index(Request $request)
     {
 
         // Recuperar as tarefas do banco de dados
-        $tasks = Task::orderBy('started_at', 'ASC')->paginate(10);
+        //$tasks = Task::orderBy('started_at', 'ASC')->paginate(10);
+        $tasks = Task::when(
+            // Filtrar pelo nome da tarefa
+            $request->filled('name'),
+            fn($query) => $query->whereLike('name', '%' . $request->name . '%')
+        )
+        ->when(
+            // Filtrar pela data/hora de início
+            $request->filled('started_at'),
+            fn($query) => $query->where('started_at', '>=', Carbon::parse($request->started_at))
+        )
+        ->when(
+            // Filtrar pela data/hora de término
+            $request->filled('finished_at'),
+            fn($query) => $query->where('finished_at', '<=', Carbon::parse($request->finished_at))
+        )
+        // Ordenar e paginar os resultados
+        ->orderBy('started_at', 'ASC')
+        // Paginar os resultados, 10 por página
+        ->paginate(10)
+        // Manter os parâmetros de query string na paginação
+        ->withQueryString();
 
         // Enviar os dados diretamente para a view
         return Inertia::render('tasks/Index', [
             'tasks' => $tasks,
+            'name' => $request->name,
+            'started_at' => $request->started_at,
+            'finished_at' => $request->finished_at
         ]);
     }
 
