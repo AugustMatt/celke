@@ -6,7 +6,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
 
 /* Importa as funções reativas do vue para criar propriedades reativas */
-import { reactive } from 'vue';
+import { reactive, watch, ref } from 'vue';
 
 /* Importa o tipo BreadcrumbItem para tipar corretamente os breadcrumbs */
 import { type BreadcrumbItem } from '@/types';
@@ -48,13 +48,34 @@ const filters = reactive({
     finished_at: props.finished_at || '',
 });
 
-/* Função para realizar a pesquisa */
-const search = () => {
-    
+/* Variável para controlar o timeout do debounce */
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+/* Função para realizar a pesquisa com debounce */
+const performSearch = () => {
     router.get('/tasks', filters, {
         preserveState: true,
         preserveScroll: true
     });
+};
+
+/* Watcher para o campo de nome com debounce (live search) */
+watch(
+    () => filters.name,
+    () => {
+        // Limpar timeout anterior se existir
+        if (searchTimeout) clearTimeout(searchTimeout);
+
+        // Definir novo timeout para executar a pesquisa após Xms de inatividade
+        searchTimeout = setTimeout(() => {
+            performSearch();
+        }, 500);
+    }
+);
+
+/* Função para realizar a pesquisa manual (data de início/fim) */
+const search = () => {
+    performSearch();
 };
 
 /* Função para limpar os filtros de pesquisa */
@@ -62,6 +83,10 @@ const clearFilters = () => {
     filters.name = '';
     filters.started_at = '';
     filters.finished_at = '';
+    
+    // Limpar timeout se existir
+    if (searchTimeout) clearTimeout(searchTimeout);
+    
     router.get('/tasks');
 }
 
@@ -102,15 +127,20 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
             <!-- Inicio do formulario (filtro) de pesquisa -->
             <form @submit.prevent="search" class="form-search">
-                <input type="text" v-model="filters.name" class="form-input" placeholder="Digite o nome da tarefa"></input>
-                <input type="datetime-local" v-model="filters.started_at" class="form-input"></input>
-                <input type="datetime-local" v-model="filters.finished_at" class="form-input"></input>
+                <!-- Campo de nome com live search automático -->
+                <input type="text" v-model="filters.name" class="form-input" placeholder="Digite o nome da tarefa (busca automática)"></input>
+                
+                <!-- Campos de data (filtro manual) -->
+                <input type="datetime-local" v-model="filters.started_at" class="form-input" title="Data de início"></input>
+                <input type="datetime-local" v-model="filters.finished_at" class="form-input" title="Data de término"></input>
+                
+                <!-- Botões de ação -->
                 <div class="flex gap-1">
-                    <button type="submit" class="btn-primary align-icon-btn">
+                    <button type="submit" class="btn-primary align-icon-btn" title="Filtrar por datas">
                         <Search class="w-4 h-4"/>                        
-                        <span>Pesquisar</span>
+                        <span>Filtrar</span>
                     </button>
-                    <button type="button" @click="clearFilters" class="btn-warning align-icon-btn">
+                    <button type="button" @click="clearFilters" class="btn-warning align-icon-btn" title="Limpar todos os filtros">
                         <Trash class="w-4 h-4"/>                        
                         <span>Limpar</span>
                     </button>
