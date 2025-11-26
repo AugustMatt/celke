@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/vue3';
+import { LoaderCircle } from 'lucide-vue-next';
 
 defineProps<{
     status?: string;
@@ -21,10 +21,10 @@ defineProps<{
 
 <template>
     <AuthBase
-        title="Login"
+        title="Faça login na sua conta"
         description="Digite seu e-mail e senha abaixo para acessar"
     >
-        <Head title="Entrar" />
+        <Head title="Login" />
 
         <div
             v-if="status"
@@ -41,7 +41,7 @@ defineProps<{
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email">Endereço de e-mail</Label>
+                    <Label for="email">E-mail</Label>
                     <Input
                         id="email"
                         type="email"
@@ -64,7 +64,7 @@ defineProps<{
                             class="text-sm"
                             :tabindex="5"
                         >
-                            Esqueceu a senha?
+                            Esqueceu a Senha?
                         </TextLink>
                     </div>
                     <Input
@@ -93,8 +93,11 @@ defineProps<{
                     :disabled="processing"
                     data-test="login-button"
                 >
-                    <Spinner v-if="processing" />
-                    Entrar
+                    <LoaderCircle
+                        v-if="processing"
+                        class="h-4 w-4 animate-spin"
+                    />
+                    Acessar
                 </Button>
             </div>
 
@@ -102,7 +105,7 @@ defineProps<{
                 class="text-center text-sm text-muted-foreground"
                 v-if="canRegister"
             >
-                Não tem uma conta?
+                Não possui uma conta?
                 <TextLink :href="register()" :tabindex="5">Cadastre-se</TextLink>
             </div>
         </Form>

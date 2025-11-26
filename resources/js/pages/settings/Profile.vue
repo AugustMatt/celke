@@ -23,7 +23,7 @@ defineProps<Props>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
-        title: 'Gerenciar Perfil',
+        title: 'Configurações do Perfil',
         href: edit().url,
     },
 ];
@@ -34,13 +34,13 @@ const user = page.props.auth.user;
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Gerenciar Perfil" />
+        <Head title="Configurações do Perfil" />
 
         <SettingsLayout>
             <div class="flex flex-col space-y-6">
                 <HeadingSmall
-                    title="Perfil"
-                    description="Atualize as informações do seu perfil e o endereço de e-mail."
+                    title="Informações do Perfil"
+                    description="Editar o nome e o email da sua conta."
                 />
 
                 <Form
@@ -72,14 +72,14 @@ const user = page.props.auth.user;
                             :default-value="user.email"
                             required
                             autocomplete="username"
-                            placeholder="Endereço de e-mail"
+                            placeholder="Seu melhor e-mail"
                         />
                         <InputError class="mt-2" :message="errors.email" />
                     </div>
 
                     <div v-if="mustVerifyEmail && !user.email_verified_at">
                         <p class="-mt-4 text-sm text-muted-foreground">
-                            Seu endereço de e-mail não foi verificado.
+                            O seu endereço de e-mail não está verificado.
                             <Link
                                 :href="send()"
                                 as="button"
@@ -93,8 +93,7 @@ const user = page.props.auth.user;
                             v-if="status === 'verification-link-sent'"
                             class="mt-2 text-sm font-medium text-green-600"
                         >
-                            Um novo link de verificação foi enviado para o seu
-                            endereço de e-mail.
+                            Um novo link de verificação foi enviado para o seu e-mail.
                         </div>
                     </div>
 
@@ -115,7 +114,7 @@ const user = page.props.auth.user;
                                 v-show="recentlySuccessful"
                                 class="text-sm text-neutral-600"
                             >
-                                Salvo.
+                                Salvo com sucesso.
                             </p>
                         </Transition>
                     </div>

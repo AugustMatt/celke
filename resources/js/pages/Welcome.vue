@@ -51,7 +51,7 @@ withDefaults(
         <div
             class="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0 dark:text-[#EDEDEC]"
         >
-        Bem vindo a Celke!
+        Bem-vindo à Celke!
         </div>
         <div class="hidden h-14.5 lg:block"></div>
     </div>

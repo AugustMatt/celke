@@ -4,17 +4,17 @@ import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
 import { Form, Head } from '@inertiajs/vue3';
+import { LoaderCircle } from 'lucide-vue-next';
 </script>
 
-<template>
+<template> 
     <AuthBase
-        title="Crie sua conta!"
-        description="Crie sua conta preenchendo o formulário abaixo"
+        title="Crie sua conta"
+        description="Digite seus dados abaixo para criar sua conta"
     >
         <Head title="Cadastro" />
 
@@ -35,13 +35,13 @@ import { Form, Head } from '@inertiajs/vue3';
                         :tabindex="1"
                         autocomplete="name"
                         name="name"
-                        placeholder="Nome Completo"
+                        placeholder="Nome completo"
                     />
                     <InputError :message="errors.name" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="email">E-mail</Label>
+                    <Label for="email">Endereço de e-mail</Label>
                     <Input
                         id="email"
                         type="email"
@@ -63,13 +63,13 @@ import { Form, Head } from '@inertiajs/vue3';
                         :tabindex="3"
                         autocomplete="new-password"
                         name="password"
-                        placeholder="********"
+                        placeholder="Senha"
                     />
                     <InputError :message="errors.password" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation">Confirme sua senha</Label>
+                    <Label for="password_confirmation">Confirme a senha</Label>
                     <Input
                         id="password_confirmation"
                         type="password"
@@ -77,7 +77,7 @@ import { Form, Head } from '@inertiajs/vue3';
                         :tabindex="4"
                         autocomplete="new-password"
                         name="password_confirmation"
-                        placeholder="********"
+                        placeholder="Confirme a senha"
                     />
                     <InputError :message="errors.password_confirmation" />
                 </div>
@@ -89,8 +89,11 @@ import { Form, Head } from '@inertiajs/vue3';
                     :disabled="processing"
                     data-test="register-user-button"
                 >
-                    <Spinner v-if="processing" />
-                    Criar minha conta
+                    <LoaderCircle
+                        v-if="processing"
+                        class="h-4 w-4 animate-spin"
+                    />
+                    Criar conta
                 </Button>
             </div>
 

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
 import { Form, Head } from '@inertiajs/vue3';
+import { LoaderCircle } from 'lucide-vue-next';
 
 defineProps<{
     status?: string;
@@ -33,7 +33,7 @@ defineProps<{
             v-slot="{ processing }"
         >
             <Button :disabled="processing" variant="secondary">
-                <Spinner v-if="processing" />
+                <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
                 Resend verification email
             </Button>
 
